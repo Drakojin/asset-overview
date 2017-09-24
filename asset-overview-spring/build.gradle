@@ -1,12 +1,10 @@
 buildscript {
     repositories {
-        mavenCentral()
         maven { url "https://repo.spring.io/snapshot" }
         maven { url "https://repo.spring.io/milestone" }
     }
     dependencies {
         classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
-        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${kotlinVersion}")
         classpath("org.jetbrains.kotlin:kotlin-allopen:${kotlinVersion}")
         classpath("org.junit.platform:junit-platform-gradle-plugin:${junitPlatformVersion}")
         classpath("se.transmode.gradle:gradle-docker:${dockerPluginVersion}")
@@ -25,6 +23,10 @@ apply plugin: 'org.springframework.boot'
 apply plugin: 'io.spring.dependency-management'
 apply plugin: 'org.junit.platform.gradle.plugin'
 
+repositories {
+    maven { url "https://repo.spring.io/snapshot" }
+    maven { url "https://repo.spring.io/milestone" }
+}
 sourceCompatibility = javaVersion
 compileKotlin {
     kotlinOptions.jvmTarget = javaVersion
@@ -34,22 +36,22 @@ compileTestKotlin {
 }
 
 dependencies {
-    compile ("org.jetbrains.kotlin:kotlin-stdlib-jre8:${kotlinVersion}")
-    compile ("org.jetbrains.kotlin:kotlin-reflect:${kotlinVersion}")
+    compile("org.jetbrains.kotlin:kotlin-stdlib-jre8:${kotlinVersion}")
+    compile("org.jetbrains.kotlin:kotlin-reflect:${kotlinVersion}")
 
-    compile ('org.eclipse.jgit:org.eclipse.jgit:4.5.2.201704071617-r')
+    compile('org.eclipse.jgit:org.eclipse.jgit:4.5.2.201704071617-r')
 
-    compile ('org.springframework.boot:spring-boot-starter-web')
-    compile ('org.springframework.boot:spring-boot-starter-actuator')
-    compile ('org.springframework.boot:spring-boot-starter-thymeleaf')
+    compile('org.springframework.boot:spring-boot-starter-web')
+    compile('org.springframework.boot:spring-boot-starter-actuator')
+    compile('org.springframework.boot:spring-boot-starter-thymeleaf')
 
-    testCompile ('org.mockito:mockito-core:2.7.22')
-    testCompile ('com.nhaarman:mockito-kotlin:1.4.0') { transitive = false }
-    testCompile ('info.novatec.testit:testutils-mockito:0.2')
-    testCompile ('org.assertj:assertj-core:3.7.0')
+    testCompile('org.mockito:mockito-core:2.7.22')
+    testCompile('com.nhaarman:mockito-kotlin:1.4.0') { transitive = false }
+    testCompile('info.novatec.testit:testutils-mockito:0.2')
+    testCompile('org.assertj:assertj-core:3.7.0')
 
-    testCompile ("org.junit.jupiter:junit-jupiter-api:${junitJupiterVersion}")
-    testCompile ("org.junit.jupiter:junit-jupiter-params:${junitJupiterVersion}")
+    testCompile("org.junit.jupiter:junit-jupiter-api:${junitJupiterVersion}")
+    testCompile("org.junit.jupiter:junit-jupiter-params:${junitJupiterVersion}")
 
     testRuntime("org.junit.jupiter:junit-jupiter-engine:${junitJupiterVersion}")
     testRuntime("org.junit.platform:junit-platform-launcher:${junitPlatformVersion}")
@@ -61,13 +63,13 @@ dependencies {
 
 task buildDocker(type: Docker, dependsOn: build) {
     push = false
-    tag = 'caaqe/asset-overview-spring'
+    applicationName = bootJar.baseName
+    dockerfile = file("${project.projectDir}/src/main/docker/Dockerfile")
 
-    baseImage = 'frolvlad/alpine-oraclejdk8:slim'
-    volume("/tmp")
-    addFile {
-        from bootJar
-        rename { 'app.jar' }
+    doFirst {
+        copy {
+            from bootJar
+            into 'asset-overview-spring.jar'
+        }
     }
-    entryPoint(['java', '-Djava.security.egd=file:/dev/./urandom', '-jar', '/app.jar'])
 }

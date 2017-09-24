@@ -1,0 +1,15 @@
+{
+  "name": "asset-overview-express",
+  "version": "1.0.0",
+  "description": "KotlinJS Express Version of asset-overview",
+  "main": "index.js",
+  "scripts": {
+    "test": "test"
+  },
+  "author": "Drakojin",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.15.4",
+    "kotlin": "^1.1.50"
+  }
+}
