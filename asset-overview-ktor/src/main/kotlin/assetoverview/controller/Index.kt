@@ -34,7 +34,7 @@ fun Route.index(manager: ProjectManager) {
     }
 }
 
-fun UL.projectEntries(projects: List<Project>) {
+private fun UL.projectEntries(projects: List<Project>) {
     projects.forEach {
         li {
             a(href = "/${it.id}")
